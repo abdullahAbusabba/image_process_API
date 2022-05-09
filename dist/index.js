@@ -1,24 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const sharp = require("sharp");
-const img = "https://images.pexels.com/photos/4815143/pexels-photo-4815143.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
-(function () {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const info = yield sharp(img).png().toBuffer();
-            fs.writeFile("./test.png");
-            console.log(info);
-        }
-        catch (err) {
-            console.log({ error: err instanceof Error ? err.message : "Failed to do something exceptional" });
-        }
-    });
-})();
+const fs = require("fs");
+const request = require('request');
