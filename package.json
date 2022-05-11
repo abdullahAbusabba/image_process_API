@@ -23,6 +23,7 @@
   "homepage": "https://github.com/abdullahAbusabba/image_process_api#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "glob": "^8.0.1",
     "jasmine": "^4.1.0",
     "jasmine-spec-reporter": "^7.0.0",
     "request": "^2.88.2",
