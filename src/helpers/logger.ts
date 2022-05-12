@@ -10,7 +10,7 @@ import express from "express";
 
 */
 
-function logger (
+function logger(
   req: express.Request,
   res: express.Response,
   next: Function

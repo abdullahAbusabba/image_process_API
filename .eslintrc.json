@@ -14,9 +14,15 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["*[sS]pec.ts","src/tests/**"],
     "rules": {
 	"semi": [2, "always"],
-    "quotes": [2, "double"]
-    }
-   
+    "quotes": [2, "double"],
+    "space-before-function-paren": ["error", {
+    "anonymous": "always",
+    "named": "never",
+    "asyncArrow": "never"
+    }]
+    } 
+
 }

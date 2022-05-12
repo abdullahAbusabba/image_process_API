@@ -7,6 +7,6 @@ routers.get("/", (req: express.Request, res: express.Response) => {
   console.log("routers api");
 });
 
-routers.use("/images",images);
+routers.use("/images", images);
 
 export default routers;

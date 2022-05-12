@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon src/index.ts",
     "build": "npx tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "jasmine": "jasmine",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier --config .prettierrc.json './src/*.ts' './src/*/*.ts' --write"
   },
