@@ -1,67 +1,55 @@
 import express from "express";
 const sharp = require("sharp");
-const images = express.Router();
+const images: express.Router = express.Router();
 const glob = require("glob");
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTl: 60000 });
 
-images.get("/", (req: express.Request, res: express.Response) => {
-  res.status(200);
+images.get("/", (req: express.Request, res: express.Response): void => {
+
 
   const dir: string = __dirname.split("/").slice(0, -2).join("/") + "/assets";
 
   const filename: string = (req.query.filename ?? undefined) as string;
   const width: string = (req.query.width ?? undefined) as string;
   const height: string = (req.query.height ?? undefined) as string;
+
+  const queries: [string, string, string] = [filename, width, height];
+  const isUndefined = queries.every(
+    (element) => typeof element === "undefined"
+  );
+
   const img = new Image(
     filename,
     width,
     height,
     `${dir}/full/${filename}`,
-    `${dir}/thump/process_${filename}`
-  );
-  const queries: [string, string, string] = [
-    img.filename,
-    img.width,
-    img.height
-  ];
-  const isUndefined = queries.every(
-    (element) => typeof element === "undefined"
+    `${dir}/thump/${width}_${height}_${filename}`,
+    req.url
   );
 
-  glob(
-    `${dir}/full/*.*`,
-    async function (err: Error, files: string[]): Promise<void> {
-      if (err) {
-        console.log({
-          error:
-            err instanceof Error
-              ? err.message
-              : "Failed to do something exceptional"
-        });
-      }
-
-      if (!isUndefined && files.includes(img.dirname)) {
-        try {
-          await sharp(img.dirname)
-            .resize({
-              width: parseInt(img.width),
-              height: parseInt(img.height)
-            })
-            .png()
-            .toFile(img.outPutPath);
-          res.sendFile(img.outPutPath);
-        } catch (err) {
-          console.log({
-            error:
-              err instanceof Error
-                ? err.message
-                : "Failed to do something exceptional"
-          });
-        }
-      } else if (!isUndefined && !files.includes(img.dirname)) {
-        res.send(`${img.filename} is not available`);
-      }
+  glob(`${dir}/full/*.*`, function (err: Error, files: string[]): void {
+    if (err) {
+      img.errorLog(err as Error, res);
     }
-  );
+
+    if (!isUndefined && files.includes(img.dirname)) {
+      img.processImage(res);
+    } else if (!isUndefined && !files.includes(img.dirname)) {
+      res.send(`${img.filename} is not available`);
+    } else {
+      const names: string[] = [];
+      let name: unknown = "" as string;
+      files.forEach(function (el) {
+        name = el.split("/").slice(-1);
+        names.push(name as string);
+      });
+
+      res.send(
+        `Please enter an image name in the url, example:<br/>http://localhost:3001/api/images<em>?filename=palmtunnel.jpg&width=300&height=200</em>.<br/><br/>available images:<hr/>${names}`
+      );
+    }
+  });
 });
 
 class Image {
@@ -70,20 +58,58 @@ class Image {
   height: string;
   dirname: string;
   outPutPath: string;
+  url: string;
 
   constructor(
     filename: string,
     width: string,
     height: string,
     dirname: string,
-    outPutPath: string
+    outPutPath: string,
+    url: string
   ) {
     this.filename = filename;
     this.width = width;
     this.height = height;
     this.dirname = dirname;
     this.outPutPath = outPutPath;
+    this.url = url;
+  }
+  errorLog(err: Error, res: express.Response): void {
+    console.log({
+      error:
+        err instanceof Error
+          ? err.message
+          : "Failed to do something exceptional"
+    });
+    res.send(
+      err instanceof Error ? err.message : "Failed to do something exceptional"
+    );
+  }
+
+  async processImage(res: express.Response): Promise<string | null> {
+    console.log(`is Image in cache? ${myCache.has(this.url)}`);
+    if (myCache.has(this.url)) {
+      res.sendFile(myCache.get(this.url));
+      return myCache.take(this.url);
+    } else {
+      try {
+        await sharp(this.dirname)
+          .resize({
+            width: parseInt(this.width),
+            height: parseInt(this.height)
+          })
+          .png()
+          .toFile(this.outPutPath);
+        myCache.set(this.url, this.outPutPath);
+        res.sendFile(this.outPutPath);
+        return this.outPutPath;
+      } catch (err) {
+        this.errorLog(err as Error, res);
+        return null;
+      }
+    }
   }
 }
 
-export default images;
+export { images, Image };

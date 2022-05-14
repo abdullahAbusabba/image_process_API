@@ -1,8 +1,8 @@
 import express from "express";
-import images from "./images";
+import { images } from "./images";
 const routers = express.Router();
 
-routers.get("/", (req: express.Request, res: express.Response) => {
+routers.get("/", (req: express.Request, res: express.Response): void => {
   res.send("routers api");
   console.log("routers api");
 });

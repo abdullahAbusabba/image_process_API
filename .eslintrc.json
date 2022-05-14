@@ -22,7 +22,8 @@
     "anonymous": "always",
     "named": "never",
     "asyncArrow": "never"
-    }]
+    }],
+    "lines-between-class-members":0
     } 
 
 }

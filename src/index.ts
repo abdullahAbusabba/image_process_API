@@ -1,21 +1,18 @@
 import express from "express";
 import routers from "./api/routers";
 import { logger } from "./helpers/logger";
-const app = express();
-const port = process.env.PORT || 3001;
+const app: express.Application = express();
+const port: number = (process.env.PORT || 3001) as number;
 
 app.get("/", (req: express.Request, res: express.Response) => {
   res.send("main index");
-  // res.writeHead(200, {'Content-Type': 'text/html'});
   console.log("main index.ts");
 });
 
 app.use("/api", logger, routers);
 
-app.listen(port, () => {
+app.listen(port, (): void => {
   console.log(`listening on port ${port}`);
 });
 
-const myFunc = (num: number) => num * 2;
-
-export default myFunc;
+export { app };
