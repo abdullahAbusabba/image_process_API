@@ -14,7 +14,6 @@ describe("Test first endpoint response ", (): void => {
   });
 });
 
-
 describe("Test invalid endpoint ", (): void => {
   it("should return 404 status", async (): Promise<void> => {
     const response: supertest.Response = await request.get("/test");
@@ -44,17 +43,26 @@ describe("Testing an endpoint with queries set and image processing", (): void =
     const response: supertest.Response = await request.get(
       "/api/images?filename=fjord.jpg&width=300&height=200"
     );
-      expect(response.status).toBe(200);
-
-})
+    expect(response.status).toBe(200);
+  });
 
   it("should return true for finding the new image in the folder", async (): Promise<void> => {
-     glob(path.join(__dirname, "..", "..", "assets", "thump","*.*"), function (err: Error, files: string[]): void {
-    
-      expect(files.includes(path.join(__dirname, "..", "..", "assets", "thump", "300_200_fjord.jpg"))).toBe(true);
-
-     })
-})
-
-})
-
+    glob(
+      path.join(__dirname, "..", "..", "assets", "thump", "*.*"),
+      function (err: Error, files: string[]): void {
+        expect(
+          files.includes(
+            path.join(
+              __dirname,
+              "..",
+              "..",
+              "assets",
+              "thump",
+              "300_200_fjord.jpg"
+            )
+          )
+        ).toBe(true);
+      }
+    );
+  });
+});

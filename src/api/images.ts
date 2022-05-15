@@ -6,8 +6,6 @@ const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTl: 60000 });
 
 images.get("/", (req: express.Request, res: express.Response): void => {
-
-
   const dir: string = __dirname.split("/").slice(0, -2).join("/") + "/assets";
 
   const filename: string = (req.query.filename ?? undefined) as string;
@@ -87,28 +85,29 @@ class Image {
     );
   }
 
-  async processImage(res: express.Response): Promise<string | null> {
+  async processImage(res: express.Response): Promise<void> {
     console.log(`is Image in cache? ${myCache.has(this.url)}`);
     if (myCache.has(this.url)) {
       res.sendFile(myCache.get(this.url));
-      return myCache.take(this.url);
     } else {
       try {
-        await sharp(this.dirname)
-          .resize({
-            width: parseInt(this.width),
-            height: parseInt(this.height)
-          })
-          .png()
-          .toFile(this.outPutPath);
+        await this.resizeImage();
         myCache.set(this.url, this.outPutPath);
         res.sendFile(this.outPutPath);
-        return this.outPutPath;
       } catch (err) {
         this.errorLog(err as Error, res);
-        return null;
       }
     }
+  }
+
+  resizeImage(): void {
+    sharp(this.dirname)
+      .resize({
+        width: parseInt(this.width),
+        height: parseInt(this.height)
+      })
+      .png()
+      .toFile(this.outPutPath);
   }
 }
 
