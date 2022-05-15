@@ -21,9 +21,9 @@ $ npm run start
 
 Go to the /api/images endpoint to view the available images.
 Add the parameters as following:
-filename - choose any file name in the assets/full folder
-width - resized width.
-height - resized height.
+>- filename - choose any file name in the assets/full folder
+>- width - resized width.
+>- height - resized height.
 
 The expected url will be something like
 
